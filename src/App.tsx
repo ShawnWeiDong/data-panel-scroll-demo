@@ -1,12 +1,19 @@
-import Box from '@mui/material/Box'
-import MuiTypography from '@mui/material/Typography'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
+import { useState, useEffect } from 'react'
+import Box from '@weave-mui/box'
+import Typography from '@weave-mui/typography'
+import { ThemeProvider, createTheme, getTheme, themes, densities } from '@weave-mui/styles'
+import CssBaseline from '@weave-mui/cssbaseline'
 import DataPanel from './components/DataPanel'
 
-const theme = createTheme({ palette: { mode: 'light' } })
-
 export default function App() {
+  const [theme, setTheme] = useState(() => createTheme({ palette: { mode: 'light' } }))
+
+  useEffect(() => {
+    getTheme(themes.LIGHT_GRAY, densities.HIGH).then(weaveTheme => {
+      setTheme(createTheme({}, weaveTheme))
+    })
+  }, [])
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -21,12 +28,12 @@ export default function App() {
       >
         {/* Header */}
         <Box sx={{ px: 3, pt: 3, pb: 1, flexShrink: 0 }}>
-          <MuiTypography variant="h5" sx={{ mb: 0.5, fontWeight: 700 }}>
+          <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 700 }}>
             Data Panel — Scroll Strategy Comparison
-          </MuiTypography>
-          <MuiTypography variant="body2" sx={{ color: 'text.secondary' }}>
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Expand "Bill of Materials (11)" in each panel to compare scroll strategies.
-          </MuiTypography>
+          </Typography>
         </Box>
 
         {/* Three panels — stretch to fill remaining height */}

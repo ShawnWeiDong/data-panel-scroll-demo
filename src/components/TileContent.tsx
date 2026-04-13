@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import MuiTypography from '@mui/material/Typography'
+import Box from '@weave-mui/box'
+import IconButton from '@weave-mui/icon-button'
+import Typography from '@weave-mui/typography'
 import HorizontalTile from './HorizontalTile'
 import type { TileItem, ScrollStrategy } from '../types'
 
@@ -84,9 +84,9 @@ function PaginatedTileGrid({ tiles, fillHeight }: { tiles: TileItem[]; fillHeigh
         <IconButton size="small" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={safePage === 0}>
           <ChevronLeft />
         </IconButton>
-        <MuiTypography variant="caption" sx={{ minWidth: 52, textAlign: 'center' }}>
+        <Typography variant="caption" sx={{ minWidth: 52, textAlign: 'center' }}>
           {safePage + 1} / {pageCount}
-        </MuiTypography>
+        </Typography>
         <IconButton size="small" onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1}>
           <ChevronRight />
         </IconButton>

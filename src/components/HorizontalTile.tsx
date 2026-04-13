@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import MuiTypography from '@mui/material/Typography'
+import Box from '@weave-mui/box'
+import Paper from '@weave-mui/paper'
+import Typography from '@weave-mui/typography'
 import type { TileItem } from '../types'
 
 const TYPE_COLORS: Record<string, string> = {
@@ -47,7 +47,7 @@ export default function HorizontalTile({ item }: HorizontalTileProps) {
           flexShrink: 0,
         }}
       />
-      <MuiTypography
+      <Typography
         variant="caption"
         sx={{
           overflow: 'hidden',
@@ -58,7 +58,7 @@ export default function HorizontalTile({ item }: HorizontalTileProps) {
         }}
       >
         {item.label}
-      </MuiTypography>
+      </Typography>
     </Paper>
   )
 }

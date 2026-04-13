@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import MuiTypography from '@mui/material/Typography'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import InputAdornment from '@mui/material/InputAdornment'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Divider from '@mui/material/Divider'
+import Box from '@weave-mui/box'
+import Paper from '@weave-mui/paper'
+import Typography from '@weave-mui/typography'
+import Accordion from '@weave-mui/accordion'
+import AccordionSummary from '@weave-mui/accordion-summary'
+import AccordionDetails from '@weave-mui/accordion-details'
+import Select from '@weave-mui/select'
+import MenuItem from '@weave-mui/menu-item'
+import FormControl from '@weave-mui/form-control'
+import InputAdornment from '@weave-mui/input-adornment'
+import TextField from '@weave-mui/text-field'
+import Divider from '@weave-mui/divider'
 import { mockGroups, filterOptions } from '../data/mockData'
 import TileContent from './TileContent'
 import type { ScrollStrategy } from '../types'
@@ -92,19 +92,19 @@ export default function DataPanel({
     >
       {/* Strategy banner */}
       <Box sx={{ px: 2, py: 0.75, bgcolor: 'primary.main', color: 'primary.contrastText', flexShrink: 0 }}>
-        <MuiTypography variant="caption" sx={{ fontWeight: 700, fontSize: '0.7rem', display: 'block' }}>
+        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.7rem', display: 'block' }}>
           {STRATEGY_LABELS[strategy]}
-        </MuiTypography>
-        <MuiTypography variant="caption" sx={{ fontSize: '0.63rem', opacity: 0.85 }}>
+        </Typography>
+        <Typography variant="caption" sx={{ fontSize: '0.63rem', opacity: 0.85 }}>
           {STRATEGY_DESCRIPTIONS[strategy]}
-        </MuiTypography>
+        </Typography>
       </Box>
 
       {/* Header */}
       <Box sx={{ px: 2, pt: 1.5, pb: 1, flexShrink: 0 }}>
-        <MuiTypography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.3, fontSize: '0.82rem' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.3, fontSize: '0.82rem' }}>
           {title}
-        </MuiTypography>
+        </Typography>
       </Box>
 
       {/* Filter */}
@@ -125,12 +125,12 @@ export default function DataPanel({
 
       {/* Search */}
       <Box sx={{ px: 2, pb: 1, flexShrink: 0 }}>
-        <OutlinedInput
+        <TextField
           fullWidth
           size="small"
           placeholder="Search connected data..."
-          startAdornment={<InputAdornment position="start"><SearchSvg /></InputAdornment>}
-          sx={{ fontSize: '0.8rem', '& input': { py: '6px' } }}
+          InputProps={{ startAdornment: <InputAdornment position="start"><SearchSvg /></InputAdornment> }}
+          sx={{ fontSize: '0.8rem', '& .MuiInputBase-input': { py: '6px' } }}
         />
       </Box>
 
@@ -149,7 +149,7 @@ export default function DataPanel({
       >
         {mockGroups.map((group) => (
           <Box key={group.id}>
-            <MuiTypography
+            <Typography
               variant="caption"
               sx={{
                 display: 'block', px: 2, pt: 1.5, pb: 0.5,
@@ -158,7 +158,7 @@ export default function DataPanel({
               }}
             >
               {group.groupLabel}
-            </MuiTypography>
+            </Typography>
 
             {group.items.map((item) => (
               <Accordion
@@ -177,13 +177,13 @@ export default function DataPanel({
                     '&:hover': { bgcolor: 'action.hover' },
                   }}
                 >
-                  <MuiTypography variant="body2" sx={{ fontSize: '0.82rem', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.82rem', fontWeight: 500 }}>
                     {item.label}
-                  </MuiTypography>
+                  </Typography>
                   {item.count !== undefined && (
-                    <MuiTypography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       ({item.count})
-                    </MuiTypography>
+                    </Typography>
                   )}
                 </AccordionSummary>
 
@@ -210,9 +210,9 @@ export default function DataPanel({
               justifyContent: 'center',
             }}
           >
-            <MuiTypography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.6rem', userSelect: 'none' }}>
+            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.6rem', userSelect: 'none' }}>
               ↕ scroll here to navigate panel
-            </MuiTypography>
+            </Typography>
           </Box>
         )}
       </Box>
