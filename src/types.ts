@@ -1,4 +1,4 @@
-export type ScrollStrategy = 'panel-scroll' | 'pagination' | 'nested-scroll'
+export type ScrollStrategy = 'panel-scroll' | 'pagination' | 'nested-scroll' | 'drill-down'
 
 export interface TileItem {
   id: string

@@ -11,9 +11,11 @@ import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
 import { mockGroups, filterOptions } from '../data/mockData'
 import TileContent from './TileContent'
-import type { ScrollStrategy } from '../types'
+import HorizontalTile from './HorizontalTile'
+import type { AccordionItem, ScrollStrategy } from '../types'
 
 const ExpandMoreSvg = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -30,8 +32,18 @@ const FilterSvg = () => (
     <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
   </svg>
 )
+const ChevronRightSvg = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+  </svg>
+)
+const ArrowBackSvg = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+  </svg>
+)
 
-const BOTTOM_RESERVE = 80 // px — scrollable zone left at the bottom
+const BOTTOM_RESERVE = 80
 
 interface DataPanelProps {
   strategy: ScrollStrategy
@@ -42,12 +54,14 @@ const STRATEGY_LABELS: Record<ScrollStrategy, string> = {
   'panel-scroll': '① Panel Scroll',
   pagination: '② Pagination',
   'nested-scroll': '③ Nested Scroll',
+  'drill-down': '④ Drill Down',
 }
 
 const STRATEGY_DESCRIPTIONS: Record<ScrollStrategy, string> = {
   'panel-scroll': 'Single scrollbar for everything',
   pagination: 'Tile area fills panel · ← → pages · scroll below to reach other items',
   'nested-scroll': 'Inner area scrolls when hovered · scroll below to reach other items',
+  'drill-down': 'Click → to go into a section · ← to return',
 }
 
 export default function DataPanel({
@@ -56,8 +70,8 @@ export default function DataPanel({
 }: DataPanelProps) {
   const [filter, setFilter] = useState(filterOptions[0])
   const [expandedId, setExpandedId] = useState<string | false>(false)
+  const [drillItem, setDrillItem] = useState<AccordionItem | null>(null)
 
-  // Measure the scrollable list container height for fill strategies
   const listRef = useRef<HTMLDivElement>(null)
   const [listHeight, setListHeight] = useState(0)
 
@@ -69,14 +83,12 @@ export default function DataPanel({
     return () => ro.disconnect()
   }, [])
 
-  // tile area height = list height - bottom reserve - accordion summary height (~36px)
   const tileAreaHeight = Math.max(60, listHeight - BOTTOM_RESERVE - 36)
-
   const handleChange = (id: string) => (_: React.SyntheticEvent, expanded: boolean) => {
     setExpandedId(expanded ? id : false)
   }
-
   const usesFillHeight = strategy === 'pagination' || strategy === 'nested-scroll'
+  const isDrillDown = strategy === 'drill-down'
 
   return (
     <Paper
@@ -100,122 +112,180 @@ export default function DataPanel({
         </Typography>
       </Box>
 
-      {/* Header */}
-      <Box sx={{ px: 2, pt: 1.5, pb: 1, flexShrink: 0 }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.3, fontSize: '0.82rem' }}>
-          {title}
-        </Typography>
-      </Box>
-
-      {/* Filter */}
-      <Box sx={{ px: 2, pb: 1, flexShrink: 0 }}>
-        <FormControl fullWidth size="small">
-          <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            startAdornment={<InputAdornment position="start"><FilterSvg /></InputAdornment>}
-            sx={{ fontSize: '0.8rem', '& .MuiSelect-select': { py: '6px' } }}
-          >
-            {filterOptions.map((opt) => (
-              <MenuItem key={opt} value={opt} sx={{ fontSize: '0.8rem' }}>{opt}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      {/* Search */}
-      <Box sx={{ px: 2, pb: 1, flexShrink: 0 }}>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Search connected data..."
-          InputProps={{ startAdornment: <InputAdornment position="start"><SearchSvg /></InputAdornment> }}
-          sx={{ fontSize: '0.8rem', '& .MuiInputBase-input': { py: '6px' } }}
-        />
-      </Box>
-
-      <Divider sx={{ flexShrink: 0 }} />
-
-      {/* Accordion list — always scrollable */}
-      <Box
-        ref={listRef}
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          '&::-webkit-scrollbar': { width: 6 },
-          '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 },
-        }}
-      >
-        {mockGroups.map((group) => (
-          <Box key={group.id}>
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block', px: 2, pt: 1.5, pb: 0.5,
-                color: 'text.secondary', fontWeight: 700,
-                fontSize: '0.63rem', letterSpacing: '0.08em',
-              }}
-            >
-              {group.groupLabel}
-            </Typography>
-
-            {group.items.map((item) => (
-              <Accordion
-                key={item.id}
-                expanded={expandedId === item.id}
-                onChange={handleChange(item.id)}
-                disableGutters
-                elevation={0}
-                sx={{ '&:before': { display: 'none' }, bgcolor: 'transparent' }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreSvg />}
-                  sx={{
-                    px: 2, minHeight: 36,
-                    '& .MuiAccordionSummary-content': { my: 0, alignItems: 'center', gap: 1 },
-                    '&:hover': { bgcolor: 'action.hover' },
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontSize: '0.82rem', fontWeight: 500 }}>
-                    {item.label}
-                  </Typography>
-                  {item.count !== undefined && (
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-                      ({item.count})
-                    </Typography>
-                  )}
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ p: 0 }}>
-                  <TileContent
-                    tiles={item.tiles}
-                    strategy={strategy}
-                    fillHeight={usesFillHeight ? tileAreaHeight : undefined}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </Box>
-        ))}
-
-        {/* Bottom reserve — hover here to scroll outer panel */}
-        {usesFillHeight && expandedId && (
+      {/* ── Drill-down detail view ── */}
+      {isDrillDown && drillItem ? (
+        <>
+          {/* Back header */}
           <Box
             sx={{
-              height: BOTTOM_RESERVE,
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              px: 1, py: 0.75, flexShrink: 0,
+              display: 'flex', alignItems: 'center', gap: 0.5,
+              borderBottom: '1px solid', borderColor: 'divider',
             }}
           >
-            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.6rem', userSelect: 'none' }}>
-              ↕ scroll here to navigate panel
+            <IconButton size="small" onClick={() => setDrillItem(null)} sx={{ p: 0.5 }}>
+              <ArrowBackSvg />
+            </IconButton>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+              {drillItem.label}
+            </Typography>
+            {drillItem.count !== undefined && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                ({drillItem.count})
+              </Typography>
+            )}
+          </Box>
+
+          {/* Full tile list */}
+          <Box
+            sx={{
+              flex: 1, minHeight: 0, overflowY: 'auto',
+              '&::-webkit-scrollbar': { width: 6 },
+              '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 },
+            }}
+          >
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5 }}>
+              {drillItem.tiles.map((tile) => (
+                <HorizontalTile key={tile.id} item={tile} />
+              ))}
+            </Box>
+          </Box>
+        </>
+      ) : (
+        <>
+          {/* ── Normal header + filters ── */}
+          <Box sx={{ px: 2, pt: 1.5, pb: 1, flexShrink: 0 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.3, fontSize: '0.82rem' }}>
+              {title}
             </Typography>
           </Box>
-        )}
-      </Box>
+
+          <Box sx={{ px: 2, pb: 1, flexShrink: 0 }}>
+            <FormControl fullWidth size="small">
+              <Select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                startAdornment={<InputAdornment position="start"><FilterSvg /></InputAdornment>}
+                sx={{ fontSize: '0.8rem', '& .MuiSelect-select': { py: '6px' } }}
+              >
+                {filterOptions.map((opt) => (
+                  <MenuItem key={opt} value={opt} sx={{ fontSize: '0.8rem' }}>{opt}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ px: 2, pb: 1, flexShrink: 0 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search connected data..."
+              InputProps={{ startAdornment: <InputAdornment position="start"><SearchSvg /></InputAdornment> }}
+              sx={{ fontSize: '0.8rem', '& .MuiInputBase-input': { py: '6px' } }}
+            />
+          </Box>
+
+          <Divider sx={{ flexShrink: 0 }} />
+
+          {/* ── Accordion list ── */}
+          <Box
+            ref={listRef}
+            sx={{
+              flex: 1, minHeight: 0, overflowY: 'auto',
+              '&::-webkit-scrollbar': { width: 6 },
+              '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 },
+            }}
+          >
+            {mockGroups.map((group) => (
+              <Box key={group.id}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: 'block', px: 2, pt: 1.5, pb: 0.5,
+                    color: 'text.secondary', fontWeight: 700,
+                    fontSize: '0.63rem', letterSpacing: '0.08em',
+                  }}
+                >
+                  {group.groupLabel}
+                </Typography>
+
+                {group.items.map((item) => (
+                  <Accordion
+                    key={item.id}
+                    expanded={expandedId === item.id}
+                    onChange={handleChange(item.id)}
+                    disableGutters
+                    elevation={0}
+                    sx={{ '&:before': { display: 'none' }, bgcolor: 'transparent' }}
+                  >
+                    <AccordionSummary
+                      expandIcon={!isDrillDown ? <ExpandMoreSvg /> : null}
+                      sx={{
+                        px: 2, minHeight: 36,
+                        '& .MuiAccordionSummary-content': { my: 0, alignItems: 'center', gap: 1 },
+                        '&:hover': { bgcolor: 'action.hover' },
+                        // In drill-down mode, disable the expand click area
+                        ...(isDrillDown && { cursor: 'default', pointerEvents: 'none' }),
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontSize: '0.82rem', fontWeight: 500 }}>
+                        {item.label}
+                      </Typography>
+                      {item.count !== undefined && (
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                          ({item.count})
+                        </Typography>
+                      )}
+
+                      {/* Drill-down arrow — only shown for drill-down strategy */}
+                      {isDrillDown && (
+                        <Box
+                          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', pointerEvents: 'auto' }}
+                          onClick={(e) => { e.stopPropagation(); setDrillItem(item) }}
+                        >
+                          <IconButton
+                            size="small"
+                            sx={{
+                              p: 0.5,
+                              color: 'text.secondary',
+                              '&:hover': { color: 'primary.main', bgcolor: 'action.hover' },
+                            }}
+                          >
+                            <ChevronRightSvg />
+                          </IconButton>
+                        </Box>
+                      )}
+                    </AccordionSummary>
+
+                    {!isDrillDown && (
+                      <AccordionDetails sx={{ p: 0 }}>
+                        <TileContent
+                          tiles={item.tiles}
+                          strategy={strategy}
+                          fillHeight={usesFillHeight ? tileAreaHeight : undefined}
+                        />
+                      </AccordionDetails>
+                    )}
+                  </Accordion>
+                ))}
+              </Box>
+            ))}
+
+            {usesFillHeight && expandedId && (
+              <Box
+                sx={{
+                  height: BOTTOM_RESERVE, flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.6rem', userSelect: 'none' }}>
+                  ↕ scroll here to navigate panel
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </>
+      )}
     </Paper>
   )
 }

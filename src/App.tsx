@@ -44,6 +44,7 @@ export default function App() {
           <DataPanel strategy="panel-scroll" />
           <DataPanel strategy="pagination" />
           <DataPanel strategy="nested-scroll" />
+          <DataPanel strategy="drill-down" />
         </Box>
       </Box>
     </ThemeProvider>
