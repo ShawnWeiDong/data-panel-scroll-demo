@@ -212,20 +212,20 @@ export default function DataPanel({
                 {group.items.map((item) => (
                   <Accordion
                     key={item.id}
-                    expanded={expandedId === item.id}
-                    onChange={handleChange(item.id)}
+                    expanded={isDrillDown ? false : expandedId === item.id}
+                    onChange={isDrillDown ? undefined : handleChange(item.id)}
                     disableGutters
                     elevation={0}
                     sx={{ '&:before': { display: 'none' }, bgcolor: 'transparent' }}
                   >
                     <AccordionSummary
-                      expandIcon={!isDrillDown ? <ExpandMoreSvg /> : null}
+                      expandIcon={isDrillDown ? <ChevronRightSvg /> : <ExpandMoreSvg />}
+                      onClick={isDrillDown ? () => setDrillItem(item) : undefined}
                       sx={{
                         px: 2, minHeight: 36,
                         '& .MuiAccordionSummary-content': { my: 0, alignItems: 'center', gap: 1 },
                         '&:hover': { bgcolor: 'action.hover' },
-                        // In drill-down mode, disable the expand click area
-                        ...(isDrillDown && { cursor: 'default', pointerEvents: 'none' }),
+                        ...(isDrillDown && { cursor: 'pointer' }),
                       }}
                     >
                       <Typography variant="body2" sx={{ fontSize: '0.82rem', fontWeight: 500 }}>
@@ -235,25 +235,6 @@ export default function DataPanel({
                         <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                           ({item.count})
                         </Typography>
-                      )}
-
-                      {/* Drill-down arrow — only shown for drill-down strategy */}
-                      {isDrillDown && (
-                        <Box
-                          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', pointerEvents: 'auto' }}
-                          onClick={(e) => { e.stopPropagation(); setDrillItem(item) }}
-                        >
-                          <IconButton
-                            size="small"
-                            sx={{
-                              p: 0.5,
-                              color: 'text.secondary',
-                              '&:hover': { color: 'primary.main', bgcolor: 'action.hover' },
-                            }}
-                          >
-                            <ChevronRightSvg />
-                          </IconButton>
-                        </Box>
                       )}
                     </AccordionSummary>
 
