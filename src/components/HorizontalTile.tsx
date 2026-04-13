@@ -1,6 +1,6 @@
-import Box from '@weave-mui/box'
-import Paper from '@weave-mui/paper'
-import Typography from '@weave-mui/typography'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
 import type { TileItem } from '../types'
 
 const TYPE_COLORS: Record<string, string> = {

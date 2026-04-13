@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import Box from '@weave-mui/box'
-import IconButton from '@weave-mui/icon-button'
-import Typography from '@weave-mui/typography'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import HorizontalTile from './HorizontalTile'
 import type { TileItem, ScrollStrategy } from '../types'
 
-const ITEMS_PER_PAGE = 5
 
 const ChevronLeft = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

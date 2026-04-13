@@ -1,19 +1,12 @@
-import { useState, useEffect } from 'react'
-import Box from '@weave-mui/box'
-import Typography from '@weave-mui/typography'
-import { ThemeProvider, createTheme, getTheme, themes, densities } from '@weave-mui/styles'
-import CssBaseline from '@weave-mui/cssbaseline'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 import DataPanel from './components/DataPanel'
 
+const theme = createTheme({ palette: { mode: 'light' } })
+
 export default function App() {
-  const [theme, setTheme] = useState(() => createTheme({ palette: { mode: 'light' } }))
-
-  useEffect(() => {
-    getTheme(themes.LIGHT_GRAY, densities.HIGH).then(weaveTheme => {
-      setTheme(createTheme({}, weaveTheme))
-    })
-  }, [])
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
